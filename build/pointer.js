@@ -286,6 +286,8 @@ window.Modernizr = (function( window, document, undefined ) {
   /*************** Mouse event handlers *****************/
 
   function mouseDownHandler(event) {
+    if (event.pointerFired) return;
+    event.pointerFired = true;
     event.preventDefault();
     setMouse(event);
     var payload = {
@@ -297,8 +299,10 @@ window.Modernizr = (function( window, document, undefined ) {
   }
 
   function mouseMoveHandler(event) {
+    if (event.pointerFired) return;
+    event.pointerFired = true;
     event.preventDefault();
-    if (event.currentTarget.mouseEvent) {
+    if (this.mouseEvent) {
       setMouse(event);
     }
     var payload = {
@@ -310,6 +314,8 @@ window.Modernizr = (function( window, document, undefined ) {
   }
 
   function mouseUpHandler(event) {
+    if (event.pointerFired) return;
+    event.pointerFired = true;
     event.preventDefault();
     unsetMouse(event);
     var payload = {
@@ -323,6 +329,8 @@ window.Modernizr = (function( window, document, undefined ) {
   /*************** Touch event handlers *****************/
 
   function touchStartHandler(event) {
+    if (event.pointerFired) return;
+    event.pointerFired = true;
     event.preventDefault();
     setTouch(event);
     var payload = {
@@ -334,6 +342,8 @@ window.Modernizr = (function( window, document, undefined ) {
   }
 
   function touchMoveHandler(event) {
+    if (event.pointerFired) return;
+    event.pointerFired = true;
     event.preventDefault();
     setTouch(event);
     var payload = {
@@ -345,6 +355,8 @@ window.Modernizr = (function( window, document, undefined ) {
   }
 
   function touchEndHandler(event) {
+    if (event.pointerFired) return;
+    event.pointerFired = true;
     event.preventDefault();
     setTouch(event);
     var payload = {
@@ -356,7 +368,12 @@ window.Modernizr = (function( window, document, undefined ) {
   }
 
   function mouseOutHandler(event) {
-    if (event.currentTarget.mouseEvent && !event.currentTarget.contains(event.toElement)) {
+    if (event.pointerFired) return;
+    event.pointerFired = true;
+    if (this.mouseEvent &&
+        !this.contains(event.toElement) &&
+        !this.contains(event.fromElement)
+      ) {
       event.preventDefault();
       unsetMouse(event);
       var payload = {
@@ -379,10 +396,10 @@ window.Modernizr = (function( window, document, undefined ) {
       event.textPointerType = PointerTypes.MOUSE;
     }
     if (event.textPointerType == PointerTypes.MOUSE) {
-        event.target.msMouseDown = true;
+        this.msMouseDown = true;
     }
-    if (!event.target.msPointerList) event.target.msPointerList = {};
-    event.target.msPointerList[event.pointerId] = event;
+    if (!this.msPointerList) this.msPointerList = {};
+    this.msPointerList[event.pointerId] = event;
     var payload = {
       pointerType: event.textPointerType,
       getPointerList: getPointerList.bind(this),
@@ -400,11 +417,11 @@ window.Modernizr = (function( window, document, undefined ) {
     } else if (event.pointerType == 4) {
       event.textPointerType = PointerTypes.MOUSE;
     }
-    if (event.textPointerType == PointerTypes.MOUSE && !event.target.msMouseDown) {
+    if (event.textPointerType == PointerTypes.MOUSE && !this.msMouseDown) {
       return;
     }
-    if (!event.target.msPointerList) event.target.msPointerList = {};
-    event.target.msPointerList[event.pointerId] = event;
+    if (!this.msPointerList) this.msPointerList = {};
+    this.msPointerList[event.pointerId] = event;
     var payload = {
       pointerType: event.textPointerType,
       getPointerList: getPointerList.bind(this),
@@ -414,8 +431,8 @@ window.Modernizr = (function( window, document, undefined ) {
   }
 
   function pointerUpHandler(event) {
-    if (event.target.msPointerList) {
-      delete event.target.msPointerList[event.pointerId];
+    if (this.msPointerList) {
+      delete this.msPointerList[event.pointerId];
     }
     if (event.pointerType == 2) {
       event.textPointerType = PointerTypes.TOUCH;
@@ -425,7 +442,7 @@ window.Modernizr = (function( window, document, undefined ) {
       event.textPointerType = PointerTypes.MOUSE;
     }
     if (event.textPointerType == PointerTypes.MOUSE) {
-        event.target.msMouseDown = false;
+        this.msMouseDown = false;
     }
     var payload = {
       pointerType: event.textPointerType,
