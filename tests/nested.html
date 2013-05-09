@@ -1,0 +1,38 @@
+<html>
+<head>
+    <title></title>
+    <style type="text/css">
+        #test, .inner {
+            width: 500px;
+            height: 500px;
+            background-color: #eee;
+        }
+    </style>
+    <script src="../build/pointer.js"></script>
+</head>
+<body>
+    <div id="test">
+        <div id="inner" class="inner">
+            <div class="inner"></div>
+        </div>
+    </div>
+    <script>
+        function $ (q) { return document.querySelector(q) }
+        $('#test').addEventListener('pointerdown', function () {
+            console.log('down!!!')
+        })
+
+        $('#test').addEventListener('pointerup', function () {
+            console.log('up!!!')
+        })
+
+        $('#inner').addEventListener('pointerup', function () {
+            //console.log('up!!!')
+        })
+
+        $('#inner').addEventListener('pointerdown', function () {
+            //console.log('inner down!!!')
+        })
+    </script>
+</body>
+</html>

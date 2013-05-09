@@ -29,6 +29,9 @@
 
   function pointerDown(e) {
 
+    if (e.gestureFired) return;
+    e.gestureFired = true;
+
     // Something went down. Clear the last press if there was one.
 
     clearTimeout(this.longPressTimer);
@@ -55,6 +58,10 @@
   }
 
   function pointerMove(e) {
+
+    if (e.gestureFired) return;
+    e.gestureFired = true;
+
     var pointers = e.getPointerList();
     
     if(e.pointerType === PointerTypes.MOUSE) {
@@ -75,6 +82,8 @@
   }
 
   function pointerUp(e) {
+    if (e.gestureFired) return;
+    e.gestureFired = true;
     clearTimeout(this.longPressTimer);
   }
 

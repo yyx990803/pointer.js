@@ -8,6 +8,8 @@
   var TAP_TIME = 600; // this should be the same with longpress trigger time
 
   function pointerDown(e) {
+    if (e.gestureFired) return;
+    e.gestureFired = true;
     var pointers = e.getPointerList();
     if (pointers.length != 1) return;
     e.target.tapInitPosition = pointers[0];
@@ -18,6 +20,8 @@
   }
 
   function pointerUp(e) {
+    if (e.gestureFired) return;
+    e.gestureFired = true;
     var pointers = e.getPointerList();
     if (pointers.length) return;
     e.target.removeEventListener('pointerup', pointerUp);

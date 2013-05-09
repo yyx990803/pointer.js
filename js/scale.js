@@ -43,6 +43,8 @@
   };
 
   function pointerDown(e) {
+    if (e.gestureFired) return;
+    e.gestureFired = true;
     var pointerList = e.getPointerList();
     // If there are exactly two pointers down,
     if (pointerList.length == 2) {
@@ -53,6 +55,8 @@
   }
 
   function pointerMove(e) {
+    if (e.gestureFired) return;
+    e.gestureFired = true;
     var pointerList = e.getPointerList();
     // If there are two pointers down, compare to the initial pointer pair.
     if (pointerList.length == 2 && e.target.scaleReferencePair) {
@@ -73,6 +77,8 @@
   }
 
   function pointerUp(e) {
+    if (e.gestureFired) return;
+    e.gestureFired = true;
     e.target.scaleReferencePair = null;
   }
 

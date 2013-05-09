@@ -604,6 +604,10 @@ window.Modernizr = (function( window, document, undefined ) {
   };
 
   function pointerDown(e) {
+
+    if (e.gestureFired) return;
+    e.gestureFired = true;
+    
     var pointers = e.getPointerList();
     if (pointers.length != 1) return;
     var now = new Date().getTime();
@@ -663,6 +667,9 @@ window.Modernizr = (function( window, document, undefined ) {
 
   function pointerDown(e) {
 
+    if (e.gestureFired) return;
+    e.gestureFired = true;
+
     // Something went down. Clear the last press if there was one.
 
     clearTimeout(this.longPressTimer);
@@ -689,6 +696,10 @@ window.Modernizr = (function( window, document, undefined ) {
   }
 
   function pointerMove(e) {
+
+    if (e.gestureFired) return;
+    e.gestureFired = true;
+
     var pointers = e.getPointerList();
     
     if(e.pointerType === PointerTypes.MOUSE) {
@@ -709,6 +720,8 @@ window.Modernizr = (function( window, document, undefined ) {
   }
 
   function pointerUp(e) {
+    if (e.gestureFired) return;
+    e.gestureFired = true;
     clearTimeout(this.longPressTimer);
   }
 
@@ -770,6 +783,8 @@ window.Modernizr = (function( window, document, undefined ) {
   };
 
   function pointerDown(e) {
+    if (e.gestureFired) return;
+    e.gestureFired = true;
     var pointerList = e.getPointerList();
     // If there are exactly two pointers down,
     if (pointerList.length == 2) {
@@ -780,6 +795,8 @@ window.Modernizr = (function( window, document, undefined ) {
   }
 
   function pointerMove(e) {
+    if (e.gestureFired) return;
+    e.gestureFired = true;
     var pointerList = e.getPointerList();
     // If there are two pointers down, compare to the initial pointer pair.
     if (pointerList.length == 2 && e.target.scaleReferencePair) {
@@ -800,6 +817,8 @@ window.Modernizr = (function( window, document, undefined ) {
   }
 
   function pointerUp(e) {
+    if (e.gestureFired) return;
+    e.gestureFired = true;
     e.target.scaleReferencePair = null;
   }
 
@@ -826,6 +845,8 @@ window.Modernizr = (function( window, document, undefined ) {
   var TAP_TIME = 600; // this should be the same with longpress trigger time
 
   function pointerDown(e) {
+    if (e.gestureFired) return;
+    e.gestureFired = true;
     var pointers = e.getPointerList();
     if (pointers.length != 1) return;
     e.target.tapInitPosition = pointers[0];
@@ -836,6 +857,8 @@ window.Modernizr = (function( window, document, undefined ) {
   }
 
   function pointerUp(e) {
+    if (e.gestureFired) return;
+    e.gestureFired = true;
     var pointers = e.getPointerList();
     if (pointers.length) return;
     e.target.removeEventListener('pointerup', pointerUp);
@@ -886,6 +909,8 @@ window.Modernizr = (function( window, document, undefined ) {
   };
 
   function pointerDown(e) {
+    if (e.gestureFired) return;
+    e.gestureFired = true;
     var pointers = e.getPointerList();
     if (pointers.length != 1) return;
     var now = new Date().getTime();
