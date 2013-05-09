@@ -24,7 +24,8 @@ module.exports = function( grunt ) {
           'js/doubletap.js',
           'js/longpress.js',
           'js/scale.js',
-          'js/tap.js'
+          'js/tap.js',
+          'js/tripletap.js'
         ]
       }
     },

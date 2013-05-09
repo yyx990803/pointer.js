@@ -31,12 +31,16 @@ Supported gestures: longpress, doubletap, pinchzoom.
 
   var test = document.querySelector('#test');
 
-  test.addEventListener('gesturetap', function() {
-    log('tap');
-  });
+  // test.addEventListener('gesturetap', function() {
+  //   log('tap');
+  // });
 
-  test.addEventListener('gesturedoubletap', function() {
-    log('doubletap');
+  // test.addEventListener('gesturedoubletap', function() {
+  //   log('doubletap');
+  // });
+
+  test.addEventListener('gesturetripletap', function() {
+    log('tripletap');
   });
 
   test.addEventListener('gesturelongpress', function() {
