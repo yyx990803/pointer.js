@@ -350,7 +350,7 @@ window.Modernizr = (function( window, document, undefined ) {
     if (globalMouseDown) {
       event.preventDefault();
       unsetMouse(event);
-      if (!this.contains(to) && !(this.contains(from) && this !== from)) {
+      if (!this.contains(to) && !(this.contains(from) && this.contains(to))) {
         var payload = {
           pointerType: 'mouse',
           getPointerList: getPointerList.bind(event.target),
