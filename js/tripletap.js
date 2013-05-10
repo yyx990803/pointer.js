@@ -3,27 +3,9 @@
  *
  * Taps happen when an element is pressed and then released.
  */
-(function(exports) {
+(function(POINTER) {
   var INTERVAL_TIME = 300;
   var WIGGLE_THRESHOLD = 10;
-
-  /**
-   * A simple object for storing the position of a pointer.
-   */
-  function PointerPosition(pointer) {
-    this.x = pointer.clientX;
-    this.y = pointer.clientY;
-  }
-
-  /**
-   * calculate the squared distance of the given pointer from this 
-   * PointerPosition's pointer
-   */
-  PointerPosition.prototype.calculateSquaredDistance = function(pointer) {
-    var dx = this.x - pointer.clientX;
-    var dy = this.y - pointer.clientY;
-    return dx*dx + dy*dy;
-  };
 
   function pointerDown(e) {
     if (e.tripleTapFired) return;
@@ -40,17 +22,17 @@
       this.lastTripleTapPosition = null;
       this.tapCount = 0;
       var payload = {
-        pageX: pointers[0].pageX,
-        pageY: pointers[0].pageY
+        clientX: pointers[0].clientX,
+        clientY: pointers[0].clientY
       };
-      window._createCustomEvent('gesturetripletap', e.target, payload);
+      POINTER.create('gesturetripletap', e.target, payload);
     } else {
       if (now - this.lastTripleTapDownTime > INTERVAL_TIME) {
         this.tapCount = 1;
       } else {
         this.tapCount = (this.tapCount || 0) + 1;
       }
-      this.lastTripleTapPosition = new PointerPosition(pointers[0]);
+      this.lastTripleTapPosition = new POINTER.PointerPosition(pointers[0]);
       this.lastTripleTapDownTime = now;
     }
   }
@@ -62,6 +44,6 @@
     el.addEventListener('pointerdown', pointerDown);
   }
 
-  exports.Gesture._gestureHandlers.gesturetripletap = emitTripleTaps;
+  POINTER.gestureHandlers.gesturetripletap = emitTripleTaps;
 
-})(window);
+})(window.POINTER);

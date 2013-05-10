@@ -3,27 +3,9 @@
  *
  * Taps happen when an element is pressed and then released.
  */
-(function(exports) {
+(function(POINTER) {
   var DOUBLETAP_TIME = 300;
   var WIGGLE_THRESHOLD = 10;
-
-  /**
-   * A simple object for storing the position of a pointer.
-   */
-  function PointerPosition(pointer) {
-    this.x = pointer.clientX;
-    this.y = pointer.clientY;
-  }
-
-  /**
-   * calculate the squared distance of the given pointer from this 
-   * PointerPosition's pointer
-   */
-  PointerPosition.prototype.calculateSquaredDistance = function(pointer) {
-    var dx = this.x - pointer.clientX;
-    var dy = this.y - pointer.clientY;
-    return dx*dx + dy*dy;
-  };
 
   function pointerDown(e) {
 
@@ -37,12 +19,12 @@
       this.lastDownTime = 0;
       this.lastPosition = null;
       var payload = {
-        pageX: pointers[0].pageX,
-        pageY: pointers[0].pageY
+        clientX: pointers[0].clientX,
+        clientY: pointers[0].clientY
       };
-      window._createCustomEvent('gesturedoubletap', e.target, payload);
+      POINTER.create('gesturedoubletap', e.target, payload);
     } else {
-      this.lastPosition = new PointerPosition(pointers[0]);
+      this.lastPosition = new POINTER.PointerPosition(pointers[0]);
       this.lastDownTime = now;
     }
   }
@@ -54,6 +36,6 @@
     el.addEventListener('pointerdown', pointerDown);
   }
 
-  exports.Gesture._gestureHandlers.gesturedoubletap = emitDoubleTaps;
+  POINTER.gestureHandlers.gesturedoubletap = emitDoubleTaps;
 
-})(window);
+})(window.POINTER);

@@ -4,28 +4,9 @@
  * Longpress happens when pointer is pressed and doesn't get released
  * for a while (without movement).
  */
-(function(exports) {
+(function(POINTER) {
   var LONGPRESS_TIME = 600;
   var WIGGLE_THRESHOLD = 5;
-
-  /**
-   * A simple object for storing the position of a pointer.
-   */
-  function PointerPosition(pointer) {
-    this.x = pointer.clientX;
-    this.y = pointer.clientY;
-  }
-
-  /**
-   * calculate the squared distance of the given pointer from this 
-   * PointerPosition's pointer
-   */
-  PointerPosition.prototype.calculateSquaredDistance = function(pointer) {
-    var dx = this.x - pointer.clientX;
-    var dy = this.y - pointer.clientY;
-    return dx*dx + dy*dy;
-  };
-
 
   function pointerDown(e) {
 
@@ -42,15 +23,15 @@
     if(pointers.length === 1) {
 
       // cache the position of the pointer on the target
-      e.target.longpressInitPosition = new PointerPosition(pointers[0]);
+      e.target.longpressInitPosition = new POINTER.PointerPosition(pointers[0]);
 
       // Start a timer.
       this.longPressTimer = setTimeout(function() {
         var payload = {
-          pageX: pointers[0].pageX,
-          pageY: pointers[0].pageY
+          clientX: pointers[0].clientX,
+          clientY: pointers[0].clientY
         };
-        window._createCustomEvent('gesturelongpress', e.target, payload);
+        POINTER.create('gesturelongpress', e.target, payload);
       }, LONGPRESS_TIME);
 
     }
@@ -64,7 +45,7 @@
 
     var pointers = e.getPointerList();
     
-    if(e.pointerType === PointerTypes.MOUSE) {
+    if(e.pointerType === POINTER.Types.MOUSE) {
       // if the pointer is a mouse we cancel the longpress 
       // as soon as it starts wiggling around
       clearTimeout(this.longPressTimer);
@@ -96,6 +77,6 @@
     el.addEventListener('pointerup', pointerUp);
   }
 
-  exports.Gesture._gestureHandlers.gesturelongpress = emitLongPresses;
+  POINTER.gestureHandlers.gesturelongpress = emitLongPresses;
 
-})(window);
+})(window.POINTER);

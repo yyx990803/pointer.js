@@ -5,7 +5,7 @@
  * they move so the the distance between them is greater or less than a
  * certain threshold.
  */
-(function(exports) {
+(function(POINTER) {
 
   var SCALE_THRESHOLD = 0.2;
 
@@ -71,7 +71,7 @@
           centerX: (e.target.scaleReferencePair.p1.clientX + e.target.scaleReferencePair.p2.clientX) / 2,
           centerY: (e.target.scaleReferencePair.p1.clientY + e.target.scaleReferencePair.p2.clientY) / 2
         };
-        window._createCustomEvent('gesturescale', e.target, payload);
+        POINTER.create('gesturescale', e.target, payload);
       }
     }
   }
@@ -91,6 +91,6 @@
     el.addEventListener('pointerup', pointerUp);
   }
 
-  exports.Gesture._gestureHandlers.gesturescale = emitScale;
+  POINTER.gestureHandlers.gesturescale = emitScale;
 
-})(window);
+})(window.POINTER);

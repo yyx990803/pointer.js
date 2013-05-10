@@ -6,8 +6,6 @@ module.exports = function( grunt ) {
         'browser': true,
         'globals': {
           'console': true,
-          'Gesture': true,
-          'PointerTypes': true,
           'Modernizr': true
         }
       },

@@ -1,0 +1,67 @@
+<html>
+<head>
+    <title></title>
+    <style type="text/css">
+        #test {
+            width: 500px;
+            height: 500px;
+            background-color: #eee;
+            padding: 100px;
+            box-sizing: border-box;
+        }
+
+        #inner {
+            width: 300px;
+            height: 300px;
+            background-color: #ccc;
+        }
+    </style>
+    <script src="../build/pointer.js"></script>
+</head>
+<body>
+    <div id="test">
+        <div id="inner">
+        </div>
+    </div>
+    <script>
+        function $ (q) { return document.querySelector(q) }
+        $('#test').addEventListener('gesturetripletap', function () {
+            console.log('trp parent!!!')
+        })
+
+        $('#inner').addEventListener('gesturetripletap', function () {
+            console.log('trp child!!!')
+        })
+
+        $('#test').addEventListener('gesturelongpress', function () {
+            console.log('lps parent!!!')
+        })
+
+        $('#inner').addEventListener('gesturelongpress', function () {
+            console.log('lps child!!!')
+        })
+
+        $('#test').addEventListener('gesturedoubletap', function () {
+            console.log('dbt parent!!!')
+        })
+
+        $('#inner').addEventListener('gesturedoubletap', function () {
+            console.log('dbt child!!!')
+        })
+
+        $('#test').addEventListener('pointermove', function (e) {
+            var list = e.getPointerList()
+            if (list.length) {
+                console.log('move parent!!!')
+            }
+        })
+
+        $('#inner').addEventListener('pointermove', function (e) {
+            var list = e.getPointerList()
+            if (list.length) {
+                console.log('move child!!!')
+            }
+        })
+    </script>
+</body>
+</html>
