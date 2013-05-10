@@ -1,4 +1,4 @@
-(function(exports) {
+(function() {
   var MOUSE_ID = 1;
 
   function Pointer(identifier, type, event) {
@@ -23,15 +23,15 @@
   };
 
   function setMouse(mouseEvent) {
-    mouseEvent.currentTarget.mouseEvent = mouseEvent;
+    mouseEvent.target.mouseEvent = mouseEvent;
   }
 
   function unsetMouse(mouseEvent) {
-    mouseEvent.currentTarget.mouseEvent = null;
+    mouseEvent.target.mouseEvent = null;
   }
 
   function setTouch(touchEvent) {
-    touchEvent.currentTarget.touchList = touchEvent.targetTouches;
+    touchEvent.target.touchList = touchEvent.targetTouches;
   }
 
   /**
@@ -73,90 +73,121 @@
 
   /*************** Mouse event handlers *****************/
 
+  var globalMouseDown = false;
+
+  window.addEventListener('mousedown', function () {
+    globalMouseDown = true;
+  });
+
+  window.addEventListener('mouseout', function (e) {
+    if (!e.toElement && !e.relatedTarget) {
+      globalMouseDown = false;
+    }
+  });
+
+  window.addEventListener('mouseup', function () {
+    globalMouseDown = false;
+  });
+
   function mouseDownHandler(event) {
+    if (event.pointerFired) return;
+    event.pointerFired = true;
     event.preventDefault();
     setMouse(event);
     var payload = {
       pointerType: 'mouse',
-      getPointerList: getPointerList.bind(this),
+      getPointerList: getPointerList.bind(event.target),
       originalEvent: event
     };
     createCustomEvent('pointerdown', event.target, payload);
   }
 
   function mouseMoveHandler(event) {
+    if (event.pointerFired) return;
+    event.pointerFired = true;
     event.preventDefault();
-    if (event.currentTarget.mouseEvent) {
+    if (globalMouseDown) {
       setMouse(event);
     }
     var payload = {
       pointerType: 'mouse',
-      getPointerList: getPointerList.bind(this),
+      getPointerList: getPointerList.bind(event.target),
       originalEvent: event
     };
     createCustomEvent('pointermove', event.target, payload);
   }
 
   function mouseUpHandler(event) {
+    if (event.pointerFired) return;
+    event.pointerFired = true;
     event.preventDefault();
     unsetMouse(event);
     var payload = {
       pointerType: 'mouse',
-      getPointerList: getPointerList.bind(this),
-      originalEvent: event
-    };
-    createCustomEvent('pointerup', event.target, payload);
-  }
-
-  /*************** Touch event handlers *****************/
-
-  function touchStartHandler(event) {
-    event.preventDefault();
-    setTouch(event);
-    var payload = {
-      pointerType: 'touch',
-      getPointerList: getPointerList.bind(this),
-      originalEvent: event
-    };
-    createCustomEvent('pointerdown', event.target, payload);
-  }
-
-  function touchMoveHandler(event) {
-    event.preventDefault();
-    setTouch(event);
-    var payload = {
-      pointerType: 'touch',
-      getPointerList: getPointerList.bind(this),
-      originalEvent: event
-    };
-    createCustomEvent('pointermove', event.target, payload);
-  }
-
-  function touchEndHandler(event) {
-    event.preventDefault();
-    setTouch(event);
-    var payload = {
-      pointerType: 'touch',
-      getPointerList: getPointerList.bind(this),
+      getPointerList: getPointerList.bind(event.target),
       originalEvent: event
     };
     createCustomEvent('pointerup', event.target, payload);
   }
 
   function mouseOutHandler(event) {
-    if (event.currentTarget.mouseEvent &&
-        !event.currentTarget.contains(event.toElement) &&
-        !event.currentTarget.contains(event.fromElement)
-      ) {
+    if (event.pointerFired) return;
+    event.pointerFired = true;
+    var to = event.toElement || event.relatedTarget;
+    var from = event.fromElement || event.originalTarget;
+    if (globalMouseDown) {
       event.preventDefault();
       unsetMouse(event);
-      var payload = {
-        pointerType: 'mouse',
-        getPointerList: getPointerList.bind(this),
-        originalEvent: event
-      };
-      createCustomEvent('pointerup', event.target, payload);
+      if (!this.contains(to) && !(this.contains(from) && this !== from)) {
+        var payload = {
+          pointerType: 'mouse',
+          getPointerList: getPointerList.bind(event.target),
+          originalEvent: event
+        };
+        createCustomEvent('pointerup', event.target, payload);
+      }
     }
+  }
+
+  /*************** Touch event handlers *****************/
+
+  function touchStartHandler(event) {
+    if (event.pointerFired) return;
+    event.pointerFired = true;
+    event.preventDefault();
+    setTouch(event);
+    var payload = {
+      pointerType: 'touch',
+      getPointerList: getPointerList.bind(event.target),
+      originalEvent: event
+    };
+    createCustomEvent('pointerdown', event.target, payload);
+  }
+
+  function touchMoveHandler(event) {
+    if (event.pointerFired) return;
+    event.pointerFired = true;
+    event.preventDefault();
+    setTouch(event);
+    var payload = {
+      pointerType: 'touch',
+      getPointerList: getPointerList.bind(event.target),
+      originalEvent: event
+    };
+    createCustomEvent('pointermove', event.target, payload);
+  }
+
+  function touchEndHandler(event) {
+    if (event.pointerFired) return;
+    event.pointerFired = true;
+    event.preventDefault();
+    setTouch(event);
+    var payload = {
+      pointerType: 'touch',
+      getPointerList: getPointerList.bind(event.target),
+      originalEvent: event
+    };
+    createCustomEvent('pointerup', event.target, payload);
   }
 
   /*************** MSIE Pointer event handlers *****************/
@@ -176,7 +207,7 @@
     event.target.msPointerList[event.pointerId] = event;
     var payload = {
       pointerType: event.textPointerType,
-      getPointerList: getPointerList.bind(this),
+      getPointerList: getPointerList.bind(event.target),
       originalEvent: event
     };
 
@@ -198,7 +229,7 @@
     event.target.msPointerList[event.pointerId] = event;
     var payload = {
       pointerType: event.textPointerType,
-      getPointerList: getPointerList.bind(this),
+      getPointerList: getPointerList.bind(event.target),
       originalEvent: event
     };
     createCustomEvent('pointermove', event.target, payload);
@@ -220,7 +251,7 @@
     }
     var payload = {
       pointerType: event.textPointerType,
-      getPointerList: getPointerList.bind(this),
+      getPointerList: getPointerList.bind(event.target),
       originalEvent: event
     };
     createCustomEvent('pointerup', event.target, payload);
@@ -316,7 +347,10 @@
     augmentAddEventListener(HTMLElement, synthesizePointerEvents);
   }
 
-  exports._createCustomEvent = createCustomEvent;
-  exports._augmentAddEventListener = augmentAddEventListener;
-  exports.PointerTypes = PointerTypes;
-})(window);
+  window.POINTER = {
+    create : createCustomEvent,
+    augment: augmentAddEventListener,
+    Types: PointerTypes
+  };
+
+})();

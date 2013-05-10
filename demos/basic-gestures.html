@@ -15,12 +15,20 @@
     -ms-touch-action: none;
   }
 
+  .inner {
+    width: 480px;
+    height: 480px;
+  }
+
   body {
     overflow: hidden;
   }
 </style>
 
 <div id="test">
+  <div id="test2" class="inner">
+    <div class="inner"></div>
+  </div>
 </div>
 
 Supported gestures: longpress, doubletap, pinchzoom.
@@ -29,26 +37,35 @@ Supported gestures: longpress, doubletap, pinchzoom.
 <script src="../build/pointer.js"></script>
 <script>
 
-  var test = document.querySelector('#test');
+  var test = document.querySelector('#test'),
+    test2 = document.querySelector('#test2')
 
-  test.addEventListener('gesturetap', function() {
-    log('tap');
-  });
-
-  test.addEventListener('gesturedoubletap', function() {
-    log('doubletap');
-  });
+  // test.addEventListener('gesturetap', function() {
+  //   log('tap');
+  // });
 
   test.addEventListener('gesturelongpress', function() {
-    log('longpress');
+    
   });
 
-  test.addEventListener('gesturescale', function(e) {
-    log('scale: ' + e.scale);
+  test2.addEventListener('gesturelongpress', function () {
+    log('ppp');
+  })
+
+  test.addEventListener('gesturetripletap', function() {
+    log('tripletap');
   });
+
+  // test.addEventListener('gesturelongpress', function() {
+  //   log('longpress');
+  // });
+
+  // test.addEventListener('gesturescale', function(e) {
+  //   log('scale: ' + e.scale);
+  // });
 
   function log(msg) {
-    test.innerHTML = msg + '<br/>' + test.innerHTML;
+    console.log(msg)
   }
 
 </script>

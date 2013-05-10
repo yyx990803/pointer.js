@@ -3,14 +3,17 @@
  *
  * Taps happen when an element is pressed and then released.
  */
-(function(exports) {
+(function(POINTER) {
 
   var TAP_TIME = 600; // this should be the same with longpress trigger time
+  var WIGGLE_THRESHOLD = 10;
 
   function pointerDown(e) {
+    if (e.tapFired) return;
+    e.tapFired = true;
     var pointers = e.getPointerList();
     if (pointers.length != 1) return;
-    e.target.tapInitPosition = pointers[0];
+    e.target.tapInitPosition = new POINTER.PointerPosition(pointers[0]);
     e.target.addEventListener('pointerup', pointerUp);
     setTimeout(function () {
       e.target.removeEventListener('pointerup', pointerUp);
@@ -18,15 +21,22 @@
   }
 
   function pointerUp(e) {
+    if (e.tapFired) return;
+    e.tapFired = true;
     var pointers = e.getPointerList();
     if (pointers.length) return;
     e.target.removeEventListener('pointerup', pointerUp);
+
     if (this.lastDownTime === 0) return; // doubletap just triggered
-    var payload = {
-      pageX: e.target.tapInitPosition.pageX,
-      pageY: e.target.tapInitPosition.pageY
-    };
-    window._createCustomEvent('gesturetap', e.target, payload);
+
+    var pos = e.target.tapInitPosition;
+    if(pos && pos.calculateSquaredDistance(pointers[0]) > WIGGLE_THRESHOLD * WIGGLE_THRESHOLD) {
+      var payload = {
+        clientX: pos.x,
+        clientY: pos.y
+      };
+      POINTER.create('gesturetap', e.target, payload);
+    }
   }
 
   /**
@@ -36,6 +46,6 @@
     el.addEventListener('pointerdown', pointerDown);
   }
 
-  exports.Gesture._gestureHandlers.gesturetap = emitTaps;
+  POINTER.gestureHandlers.gesturetap = emitTaps;
 
-})(window);
+})(window.POINTER);

@@ -18,7 +18,7 @@ function mockGetPointerList() {
     pageY: 50,
     clientX: 30,
     clientY: 30,
-    type: PointerTypes.TOUCH,
+    type: POINTER.Types.TOUCH,
     identifier: 3
   }];
 }
@@ -31,7 +31,7 @@ if (Modernizr.touch) {
     example.addEventListener('pointerdown', function(e) {
       start();
       ok(true, 'pointerdown fired!');
-      equal(e.pointerType, PointerTypes.TOUCH, 'pointer is a touch');
+      equal(e.pointerType, POINTER.Types.TOUCH, 'pointer is a touch');
       example.removeEventListener('pointerdown', arguments.callee);
     });
     stop();
@@ -43,7 +43,7 @@ if (Modernizr.touch) {
     example.addEventListener('pointermove', function(e) {
       start();
       ok(true, 'pointermove fired!');
-      equal(e.pointerType, PointerTypes.TOUCH, 'pointer is a touch');
+      equal(e.pointerType, POINTER.Types.TOUCH, 'pointer is a touch');
       example.removeEventListener('pointermove', arguments.callee);
     });
     stop();
@@ -54,7 +54,7 @@ if (Modernizr.touch) {
     example.addEventListener('pointerup', function(e) {
       start();
       ok(true, 'pointerupfired!');
-      equal(e.pointerType, PointerTypes.TOUCH, 'pointer is a touch');
+      equal(e.pointerType, POINTER.Types.TOUCH, 'pointer is a touch');
       example.removeEventListener('pointerup', arguments.callee);
     });
     stop();
@@ -89,7 +89,7 @@ if (!Modernizr.touch && !window.navigator.msPointerEnabled) {
       start();
       ok(true, 'pointerdown fired!');
       // Check that the pointerType is as expected.
-      equal(e.pointerType, PointerTypes.MOUSE, 'pointer is a mouse');
+      equal(e.pointerType, POINTER.Types.MOUSE, 'pointer is a mouse');
       example.removeEventListener('pointerdown', arguments.callee);
     });
     // Synthesize a mousedown event.
@@ -101,7 +101,7 @@ if (!Modernizr.touch && !window.navigator.msPointerEnabled) {
     example.addEventListener('pointermove', function(e) {
       start();
       ok(true, 'pointermove fired!');
-      equal(e.pointerType, PointerTypes.MOUSE, 'pointer is a mouse');
+      equal(e.pointerType, POINTER.Types.MOUSE, 'pointer is a mouse');
       example.removeEventListener('pointermove', arguments.callee);
     });
     stop();
@@ -112,7 +112,7 @@ if (!Modernizr.touch && !window.navigator.msPointerEnabled) {
     example.addEventListener('pointerup', function(e) {
       start();
       ok(true, 'pointerup fired!');
-      equal(e.pointerType, PointerTypes.MOUSE, 'pointer is a mouse');
+      equal(e.pointerType, POINTER.Types.MOUSE, 'pointer is a mouse');
       example.removeEventListener('pointerup', arguments.callee);
     });
     stop();
@@ -142,6 +142,7 @@ if (!Modernizr.touch && !window.navigator.msPointerEnabled) {
       example.removeEventListener('pointermove', arguments.callee);
     });
     stop();
+    synthesizeEvent('mouseup', {pageX: 300, pageY: 200});
     synthesizeEvent('mousemove', {pageX: 300, pageY: 200});
   });
 
@@ -170,7 +171,7 @@ if (window.navigator.msPointerEnabled) {
     example.addEventListener('pointermove', function(e) {
       start();
       ok(true, 'pointermove fired!');
-      equal(e.pointerType, PointerTypes.TOUCH, 'pointer is a touch');
+      equal(e.pointerType, POINTER.Types.TOUCH, 'pointer is a touch');
       example.removeEventListener('pointermove', arguments.callee);
     });
     stop();
@@ -181,7 +182,7 @@ if (window.navigator.msPointerEnabled) {
     example.addEventListener('pointerup', function(e) {
       start();
       ok(true, 'pointerupfired!');
-      equal(e.pointerType, PointerTypes.TOUCH, 'pointer is a touch');
+      equal(e.pointerType, POINTER.Types.TOUCH, 'pointer is a touch');
       example.removeEventListener('pointerup', arguments.callee);
     });
     stop();
@@ -264,6 +265,24 @@ test('pointer data should bubble up with events', function () {
     example.removeEventListener('pointerdown', arguments.callee);
   });
   stop();
-  // Synthesize a mousedown event on child
+  // Synthesize a click on child
   synthesizeEvent('mousedown', {pageX: 100, pageY: 200}, true);
+  synthesizeEvent('mouseup', {pageX: 100, pageY: 200}, true);
+})
+
+test('native events should trigger only one corresponding pointer event on nested elements', function () {
+  var triggers = 0;
+  example.addEventListener('pointerdown', onDown);
+  function onDown () {
+    triggers++;
+  }
+  // Synthesize a click on child
+  synthesizeEvent('mousedown', {pageX: 100, pageY: 200}, true);
+  synthesizeEvent('mouseup', {pageX: 100, pageY: 200}, true);
+  setTimeout(function () {
+    example.removeEventListener('pointerdown', onDown);
+    start();
+    equal(triggers, 1, 'pointerdown should be triggered exactly once');
+  }, 200);
+  stop();
 })

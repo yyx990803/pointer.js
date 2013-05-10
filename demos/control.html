@@ -242,7 +242,7 @@ function onPointerUp(e) {
   pointers = e.getPointerList(); 
   if (pointers.length == 0) {
     leftPointerID = -1; 
-    if (e.pointerType == PointerTypes.pointer) {
+    if (e.pointerType == POINTER.Types.pointer) {
       leftVector.reset(0,0); 
     }
   }

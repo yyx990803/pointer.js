@@ -5,7 +5,7 @@
  * they move so the the distance between them is greater or less than a
  * certain threshold.
  */
-(function(exports) {
+(function(POINTER) {
 
   var SCALE_THRESHOLD = 0.2;
 
@@ -43,6 +43,8 @@
   };
 
   function pointerDown(e) {
+    if (e.scaleFired) return;
+    e.scaleFired = true;
     var pointerList = e.getPointerList();
     // If there are exactly two pointers down,
     if (pointerList.length == 2) {
@@ -53,6 +55,8 @@
   }
 
   function pointerMove(e) {
+    if (e.scaleFired) return;
+    e.scaleFired = true;
     var pointerList = e.getPointerList();
     // If there are two pointers down, compare to the initial pointer pair.
     if (pointerList.length == 2 && e.target.scaleReferencePair) {
@@ -67,12 +71,14 @@
           centerX: (e.target.scaleReferencePair.p1.clientX + e.target.scaleReferencePair.p2.clientX) / 2,
           centerY: (e.target.scaleReferencePair.p1.clientY + e.target.scaleReferencePair.p2.clientY) / 2
         };
-        window._createCustomEvent('gesturescale', e.target, payload);
+        POINTER.create('gesturescale', e.target, payload);
       }
     }
   }
 
   function pointerUp(e) {
+    if (e.scaleFired) return;
+    e.scaleFired = true;
     e.target.scaleReferencePair = null;
   }
 
@@ -85,6 +91,6 @@
     el.addEventListener('pointerup', pointerUp);
   }
 
-  exports.Gesture._gestureHandlers.gesturescale = emitScale;
+  POINTER.gestureHandlers.gesturescale = emitScale;
 
-})(window);
+})(window.POINTER);
