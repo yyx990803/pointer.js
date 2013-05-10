@@ -18,20 +18,31 @@
     </div>
     <script>
         function $ (q) { return document.querySelector(q) }
-        $('#test').addEventListener('pointerdown', function () {
-            console.log('down!!!')
+        $('#test').addEventListener('gesturetripletap', function () {
+            console.log('trp!!!')
         })
 
-        $('#test').addEventListener('pointerup', function () {
-            console.log('up!!!')
-        })
-
-        $('#inner').addEventListener('pointerup', function () {
+        $('#inner').addEventListener('gesturetripletap', function () {
             //console.log('up!!!')
+            console.log('trp!!!')
         })
 
-        $('#inner').addEventListener('pointerdown', function () {
-            //console.log('inner down!!!')
+        $('#test').addEventListener('gesturelongpress', function () {
+            console.log('lps!!!')
+        })
+
+        $('#inner').addEventListener('gesturelongpress', function () {
+            //console.log('up!!!')
+            console.log('lps!!!')
+        })
+
+        $('#test').addEventListener('gesturedoubletap', function () {
+            console.log('dbt!!!')
+        })
+
+        $('#inner').addEventListener('gesturedoubletap', function () {
+            //console.log('up!!!')
+            console.log('dbt!!!')
         })
     </script>
 </body>

@@ -29,8 +29,8 @@
 
   function pointerDown(e) {
 
-    if (e.gestureFired) return;
-    e.gestureFired = true;
+    if (e.longpressFired) return;
+    e.longpressFired = true;
 
     // Something went down. Clear the last press if there was one.
 
@@ -59,8 +59,8 @@
 
   function pointerMove(e) {
 
-    if (e.gestureFired) return;
-    e.gestureFired = true;
+    if (e.longpressFired) return;
+    e.longpressFired = true;
 
     var pointers = e.getPointerList();
     
@@ -82,8 +82,8 @@
   }
 
   function pointerUp(e) {
-    if (e.gestureFired) return;
-    e.gestureFired = true;
+    if (e.longpressFired) return;
+    e.longpressFired = true;
     clearTimeout(this.longPressTimer);
   }
 

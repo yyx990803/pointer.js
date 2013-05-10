@@ -26,8 +26,8 @@
   };
 
   function pointerDown(e) {
-    if (e.gestureFired) return;
-    e.gestureFired = true;
+    if (e.tripleTapFired) return;
+    e.tripleTapFired = true;
     var pointers = e.getPointerList();
     if (pointers.length != 1) return;
     var now = new Date().getTime();

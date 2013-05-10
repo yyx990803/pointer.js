@@ -162,9 +162,9 @@
   function mouseOutHandler(event) {
     if (event.pointerFired) return;
     event.pointerFired = true;
-    if (event.target.mouseEvent &&
+    if (globalMouseDown &&
         !this.contains(event.toElement) &&
-        !this.contains(event.fromElement)
+        !(this.contains(event.fromElement) && this !== event.fromElement)
       ) {
       event.preventDefault();
       unsetMouse(event);

@@ -285,12 +285,14 @@ window.Modernizr = (function( window, document, undefined ) {
 
   /*************** Mouse event handlers *****************/
 
+  var globalMouseDown = false;
+
   function mouseDownHandler(event) {
     if (event.pointerFired) return;
     event.pointerFired = true;
-    this.addEventListener('mousemove', mouseMoveHandler);
     event.preventDefault();
     setMouse(event);
+    globalMouseDown = true;
     var payload = {
       pointerType: 'mouse',
       getPointerList: getPointerList.bind(event.target),
@@ -303,7 +305,9 @@ window.Modernizr = (function( window, document, undefined ) {
     if (event.pointerFired) return;
     event.pointerFired = true;
     event.preventDefault();
-    setMouse(event);
+    if (globalMouseDown) {
+      setMouse(event);
+    }
     var payload = {
       pointerType: 'mouse',
       getPointerList: getPointerList.bind(event.target),
@@ -315,9 +319,9 @@ window.Modernizr = (function( window, document, undefined ) {
   function mouseUpHandler(event) {
     if (event.pointerFired) return;
     event.pointerFired = true;
-    this.removeEventListener('mousemove', mouseMoveHandler);
     event.preventDefault();
     unsetMouse(event);
+    globalMouseDown = false;
     var payload = {
       pointerType: 'mouse',
       getPointerList: getPointerList.bind(event.target),
@@ -370,11 +374,10 @@ window.Modernizr = (function( window, document, undefined ) {
   function mouseOutHandler(event) {
     if (event.pointerFired) return;
     event.pointerFired = true;
-    if (event.target.mouseEvent &&
+    if (globalMouseDown &&
         !this.contains(event.toElement) &&
-        !this.contains(event.fromElement)
+        !(this.contains(event.fromElement) && this !== event.fromElement)
       ) {
-      this.removeEventListener('mousemove', mouseMoveHandler);
       event.preventDefault();
       unsetMouse(event);
       var payload = {
@@ -475,7 +478,7 @@ window.Modernizr = (function( window, document, undefined ) {
           el.addEventListener('touchend', touchEndHandler);
         }
         el.addEventListener('mousedown', mouseDownHandler);
-        // el.addEventListener('mousemove', mouseMoveHandler);
+        el.addEventListener('mousemove', mouseMoveHandler);
         el.addEventListener('mouseup', mouseUpHandler);
         // Necessary for the edge case that the mouse is down and you drag out of
         // the area.
@@ -606,8 +609,8 @@ window.Modernizr = (function( window, document, undefined ) {
 
   function pointerDown(e) {
 
-    if (e.gestureFired) return;
-    e.gestureFired = true;
+    if (e.doubleTapFired) return;
+    e.doubleTapFired = true;
     
     var pointers = e.getPointerList();
     if (pointers.length != 1) return;
@@ -668,8 +671,8 @@ window.Modernizr = (function( window, document, undefined ) {
 
   function pointerDown(e) {
 
-    if (e.gestureFired) return;
-    e.gestureFired = true;
+    if (e.longpressFired) return;
+    e.longpressFired = true;
 
     // Something went down. Clear the last press if there was one.
 
@@ -698,8 +701,8 @@ window.Modernizr = (function( window, document, undefined ) {
 
   function pointerMove(e) {
 
-    if (e.gestureFired) return;
-    e.gestureFired = true;
+    if (e.longpressFired) return;
+    e.longpressFired = true;
 
     var pointers = e.getPointerList();
     
@@ -721,8 +724,8 @@ window.Modernizr = (function( window, document, undefined ) {
   }
 
   function pointerUp(e) {
-    if (e.gestureFired) return;
-    e.gestureFired = true;
+    if (e.longpressFired) return;
+    e.longpressFired = true;
     clearTimeout(this.longPressTimer);
   }
 
@@ -784,8 +787,8 @@ window.Modernizr = (function( window, document, undefined ) {
   };
 
   function pointerDown(e) {
-    if (e.gestureFired) return;
-    e.gestureFired = true;
+    if (e.scaleFired) return;
+    e.scaleFired = true;
     var pointerList = e.getPointerList();
     // If there are exactly two pointers down,
     if (pointerList.length == 2) {
@@ -796,8 +799,8 @@ window.Modernizr = (function( window, document, undefined ) {
   }
 
   function pointerMove(e) {
-    if (e.gestureFired) return;
-    e.gestureFired = true;
+    if (e.scaleFired) return;
+    e.scaleFired = true;
     var pointerList = e.getPointerList();
     // If there are two pointers down, compare to the initial pointer pair.
     if (pointerList.length == 2 && e.target.scaleReferencePair) {
@@ -818,8 +821,8 @@ window.Modernizr = (function( window, document, undefined ) {
   }
 
   function pointerUp(e) {
-    if (e.gestureFired) return;
-    e.gestureFired = true;
+    if (e.scaleFired) return;
+    e.scaleFired = true;
     e.target.scaleReferencePair = null;
   }
 
@@ -846,8 +849,8 @@ window.Modernizr = (function( window, document, undefined ) {
   var TAP_TIME = 600; // this should be the same with longpress trigger time
 
   function pointerDown(e) {
-    if (e.gestureFired) return;
-    e.gestureFired = true;
+    if (e.tapFired) return;
+    e.tapFired = true;
     var pointers = e.getPointerList();
     if (pointers.length != 1) return;
     e.target.tapInitPosition = pointers[0];
@@ -858,8 +861,8 @@ window.Modernizr = (function( window, document, undefined ) {
   }
 
   function pointerUp(e) {
-    if (e.gestureFired) return;
-    e.gestureFired = true;
+    if (e.tapFired) return;
+    e.tapFired = true;
     var pointers = e.getPointerList();
     if (pointers.length) return;
     e.target.removeEventListener('pointerup', pointerUp);
@@ -910,8 +913,8 @@ window.Modernizr = (function( window, document, undefined ) {
   };
 
   function pointerDown(e) {
-    if (e.gestureFired) return;
-    e.gestureFired = true;
+    if (e.tripleTapFired) return;
+    e.tripleTapFired = true;
     var pointers = e.getPointerList();
     if (pointers.length != 1) return;
     var now = new Date().getTime();
