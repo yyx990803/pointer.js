@@ -621,7 +621,8 @@ window.Modernizr = (function( window, document, undefined ) {
  */
 (function(POINTER) {
   var DOUBLETAP_TIME = 300;
-  var WIGGLE_THRESHOLD = 10;
+  var WIGGLE_THRESHOLD = 20;
+  var WIGGLE_THRESHOLD_MOUSE = 5;
 
   function pointerDown(e) {
 
@@ -631,7 +632,11 @@ window.Modernizr = (function( window, document, undefined ) {
     var pointers = e.getPointerList();
     if (pointers.length != 1) return;
     var now = new Date().getTime();
-    if (now - this.lastDoubleTapDownTime < DOUBLETAP_TIME && this.lastPosition && this.lastPosition.calculateSquaredDistance(pointers[0]) < WIGGLE_THRESHOLD * WIGGLE_THRESHOLD) {
+    var thresh = WIGGLE_THRESHOLD;
+    if(e.pointerType === POINTER.Types.MOUSE) {
+      thresh = WIGGLE_THRESHOLD_MOUSE;
+    }
+    if (now - this.lastDoubleTapDownTime < DOUBLETAP_TIME && this.lastPosition && this.lastPosition.calculateSquaredDistance(pointers[0]) < thresh * thresh) {
       this.lastDoubleTapDownTime = 0;
       this.lastPosition = null;
       var payload = {
@@ -919,7 +924,8 @@ window.Modernizr = (function( window, document, undefined ) {
  */
 (function(POINTER) {
   var INTERVAL_TIME = 300;
-  var WIGGLE_THRESHOLD = 10;
+  var WIGGLE_THRESHOLD = 20;
+  var WIGGLE_THRESHOLD_MOUSE = 5;
 
   function pointerDown(e) {
     if (e.tripleTapFired) return;
@@ -927,9 +933,13 @@ window.Modernizr = (function( window, document, undefined ) {
     var pointers = e.getPointerList();
     if (pointers.length != 1) return;
     var now = new Date().getTime();
+    var thresh = WIGGLE_THRESHOLD;
+    if(e.pointerType === POINTER.Types.MOUSE) {
+      thresh = WIGGLE_THRESHOLD_MOUSE;
+    }
     if (this.lastTripleTapPosition &&
       now - this.lastTripleTapDownTime < INTERVAL_TIME &&
-      this.lastTripleTapPosition.calculateSquaredDistance(pointers[0]) < WIGGLE_THRESHOLD * WIGGLE_THRESHOLD &&
+      this.lastTripleTapPosition.calculateSquaredDistance(pointers[0]) < thresh * thresh &&
       this.tapCount >= 2
     ) {
       this.lastTripleTapDownTime = 0;
