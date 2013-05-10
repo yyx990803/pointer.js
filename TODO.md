@@ -1,0 +1,3 @@
+- more gestures
+- provide tool to make custom builds that includes only certain gestures
+- Move unit tests to use phantom.js or equivalent so it can be integrated into build process

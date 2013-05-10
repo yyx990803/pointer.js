@@ -23,7 +23,7 @@
     if(pointers.length === 1) {
 
       // cache the position of the pointer on the target
-      e.target.longpressInitPosition = new POINTER.PointerPosition(pointers[0]);
+      this.longpressInitPosition = new POINTER.PointerPosition(pointers[0]);
 
       // Start a timer.
       this.longPressTimer = setTimeout(function() {
@@ -53,7 +53,7 @@
     else if(pointers.length === 1) {
       // but if the pointer is something else we allow a 
       // for a bit of smudge space
-      var pos = e.target.longpressInitPosition;
+      var pos = this.longpressInitPosition;
       
       if(pos && pos.calculateSquaredDistance(pointers[0]) > WIGGLE_THRESHOLD * WIGGLE_THRESHOLD) {
         clearTimeout(this.longPressTimer);

@@ -631,8 +631,8 @@ window.Modernizr = (function( window, document, undefined ) {
     var pointers = e.getPointerList();
     if (pointers.length != 1) return;
     var now = new Date().getTime();
-    if (now - this.lastDownTime < DOUBLETAP_TIME && this.lastPosition && this.lastPosition.calculateSquaredDistance(pointers[0]) < WIGGLE_THRESHOLD * WIGGLE_THRESHOLD) {
-      this.lastDownTime = 0;
+    if (now - this.lastDoubleTapDownTime < DOUBLETAP_TIME && this.lastPosition && this.lastPosition.calculateSquaredDistance(pointers[0]) < WIGGLE_THRESHOLD * WIGGLE_THRESHOLD) {
+      this.lastDoubleTapDownTime = 0;
       this.lastPosition = null;
       var payload = {
         clientX: pointers[0].clientX,
@@ -641,7 +641,7 @@ window.Modernizr = (function( window, document, undefined ) {
       POINTER.create('gesturedoubletap', e.target, payload);
     } else {
       this.lastPosition = new POINTER.PointerPosition(pointers[0]);
-      this.lastDownTime = now;
+      this.lastDoubleTapDownTime = now;
     }
   }
 
@@ -681,7 +681,7 @@ window.Modernizr = (function( window, document, undefined ) {
     if(pointers.length === 1) {
 
       // cache the position of the pointer on the target
-      e.target.longpressInitPosition = new POINTER.PointerPosition(pointers[0]);
+      this.longpressInitPosition = new POINTER.PointerPosition(pointers[0]);
 
       // Start a timer.
       this.longPressTimer = setTimeout(function() {
@@ -711,7 +711,7 @@ window.Modernizr = (function( window, document, undefined ) {
     else if(pointers.length === 1) {
       // but if the pointer is something else we allow a 
       // for a bit of smudge space
-      var pos = e.target.longpressInitPosition;
+      var pos = this.longpressInitPosition;
       
       if(pos && pos.calculateSquaredDistance(pointers[0]) > WIGGLE_THRESHOLD * WIGGLE_THRESHOLD) {
         clearTimeout(this.longPressTimer);
@@ -790,7 +790,7 @@ window.Modernizr = (function( window, document, undefined ) {
     // If there are exactly two pointers down,
     if (pointerList.length == 2) {
       // Record the initial pointer pair.
-      e.target.scaleReferencePair = new PointerPair(pointerList[0],
+      this.scaleReferencePair = new PointerPair(pointerList[0],
                                                     pointerList[1]);
     }
   }
@@ -800,17 +800,17 @@ window.Modernizr = (function( window, document, undefined ) {
     e.scaleFired = true;
     var pointerList = e.getPointerList();
     // If there are two pointers down, compare to the initial pointer pair.
-    if (pointerList.length == 2 && e.target.scaleReferencePair) {
+    if (pointerList.length == 2 && this.scaleReferencePair) {
       var pair = new PointerPair(pointerList[0], pointerList[1]);
       // Compute the scaling value according to the difference.
-      var scale = pair.scaleSince(e.target.scaleReferencePair);
+      var scale = pair.scaleSince(this.scaleReferencePair);
       // If the movement is drastic enough:
       if (Math.abs(1 - scale) > SCALE_THRESHOLD) {
         // Create the scale event as a result.
         var payload = {
           scale: scale,
-          centerX: (e.target.scaleReferencePair.p1.clientX + e.target.scaleReferencePair.p2.clientX) / 2,
-          centerY: (e.target.scaleReferencePair.p1.clientY + e.target.scaleReferencePair.p2.clientY) / 2
+          centerX: (this.scaleReferencePair.p1.clientX + this.scaleReferencePair.p2.clientX) / 2,
+          centerY: (this.scaleReferencePair.p1.clientY + this.scaleReferencePair.p2.clientY) / 2
         };
         POINTER.create('gesturescale', e.target, payload);
       }
@@ -820,7 +820,7 @@ window.Modernizr = (function( window, document, undefined ) {
   function pointerUp(e) {
     if (e.scaleFired) return;
     e.scaleFired = true;
-    e.target.scaleReferencePair = null;
+    this.scaleReferencePair = null;
   }
 
   /**
@@ -851,30 +851,54 @@ window.Modernizr = (function( window, document, undefined ) {
     e.tapFired = true;
     var pointers = e.getPointerList();
     if (pointers.length != 1) return;
-    e.target.tapInitPosition = new POINTER.PointerPosition(pointers[0]);
-    e.target.addEventListener('pointerup', pointerUp);
-    setTimeout(function () {
-      e.target.removeEventListener('pointerup', pointerUp);
-    }, TAP_TIME);
+    this.tapInitPosition = new POINTER.PointerPosition(pointers[0]);
+    this.addEventListener('pointerup', pointerUp);
+    this.addEventListener('pointermove', pointerMove);
+    this.tapCancelTimer = setTimeout(cancelTap.bind(this), TAP_TIME);
   }
 
-  function pointerUp(e) {
+  function pointerMove(e) {
     if (e.tapFired) return;
     e.tapFired = true;
     var pointers = e.getPointerList();
-    if (pointers.length) return;
-    e.target.removeEventListener('pointerup', pointerUp);
-
-    if (this.lastDownTime === 0) return; // doubletap just triggered
-
-    var pos = e.target.tapInitPosition;
-    if(pos && pos.calculateSquaredDistance(pointers[0]) > WIGGLE_THRESHOLD * WIGGLE_THRESHOLD) {
-      var payload = {
-        clientX: pos.x,
-        clientY: pos.y
-      };
-      POINTER.create('gesturetap', e.target, payload);
+    if(e.pointerType === POINTER.Types.MOUSE) {
+      cancelTap.call(this);
     }
+    else if(pointers.length === 1) {
+      // but if the pointer is something else we allow a 
+      // for a bit of smudge space
+      var pos = this.tapInitPosition;
+      if(pos && pos.calculateSquaredDistance(pointers[0]) > WIGGLE_THRESHOLD * WIGGLE_THRESHOLD) {
+        cancelTap.call(this);
+      }
+    }
+  }
+
+  function pointerUp(e) {
+
+    if (e.tapFired) return;
+    e.tapFired = true;
+
+    var pointers = e.getPointerList();
+    if (pointers.length) return;
+
+    cancelTap.call(this);
+
+    // double / triple tap just triggered
+    if (this.lastDoubleTapDownTime === 0 || this.lastTripleTapDownTime === 0) return;
+
+    var pos = this.tapInitPosition;
+    var payload = {
+      clientX: pos.x,
+      clientY: pos.y
+    };
+    POINTER.create('gesturetap', e.target, payload);
+  }
+
+  function cancelTap () {
+    clearTimeout(this.tapCancelTimer);
+    this.removeEventListener('pointerup', pointerUp);
+    this.removeEventListener('pointermove', pointerMove);
   }
 
   /**

@@ -15,8 +15,8 @@
     var pointers = e.getPointerList();
     if (pointers.length != 1) return;
     var now = new Date().getTime();
-    if (now - this.lastDownTime < DOUBLETAP_TIME && this.lastPosition && this.lastPosition.calculateSquaredDistance(pointers[0]) < WIGGLE_THRESHOLD * WIGGLE_THRESHOLD) {
-      this.lastDownTime = 0;
+    if (now - this.lastDoubleTapDownTime < DOUBLETAP_TIME && this.lastPosition && this.lastPosition.calculateSquaredDistance(pointers[0]) < WIGGLE_THRESHOLD * WIGGLE_THRESHOLD) {
+      this.lastDoubleTapDownTime = 0;
       this.lastPosition = null;
       var payload = {
         clientX: pointers[0].clientX,
@@ -25,7 +25,7 @@
       POINTER.create('gesturedoubletap', e.target, payload);
     } else {
       this.lastPosition = new POINTER.PointerPosition(pointers[0]);
-      this.lastDownTime = now;
+      this.lastDoubleTapDownTime = now;
     }
   }
 

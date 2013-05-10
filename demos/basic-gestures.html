@@ -38,35 +38,31 @@ Supported gestures: longpress, doubletap, pinchzoom.
 <script>
 
   var test = document.querySelector('#test'),
-    test2 = document.querySelector('#test2')
+      test2 = document.querySelector('#test2')
 
-  // test.addEventListener('gesturetap', function() {
-  //   log('tap');
-  // });
-
-  test.addEventListener('gesturelongpress', function() {
-    
+  test.addEventListener('gesturetap', function() {
+    console.log('tap')
   });
 
   test2.addEventListener('gesturelongpress', function () {
-    log('ppp');
+    console.log('longpress2');
+  })
+
+  test.addEventListener('gesturelongpress', function () {
+    console.log('longpress1');
   })
 
   test.addEventListener('gesturetripletap', function() {
-    log('tripletap');
+    console.log('tripletap');
   });
 
-  // test.addEventListener('gesturelongpress', function() {
-  //   log('longpress');
-  // });
+  test.addEventListener('gesturedoubletap', function() {
+    console.log('doubletap');
+  });
 
-  // test.addEventListener('gesturescale', function(e) {
-  //   log('scale: ' + e.scale);
-  // });
-
-  function log(msg) {
-    console.log(msg)
-  }
+  test.addEventListener('gesturescale', function(e) {
+    console.log('scale: ' + e.scale);
+  });
 
 </script>
 </body>

@@ -49,7 +49,7 @@
     // If there are exactly two pointers down,
     if (pointerList.length == 2) {
       // Record the initial pointer pair.
-      e.target.scaleReferencePair = new PointerPair(pointerList[0],
+      this.scaleReferencePair = new PointerPair(pointerList[0],
                                                     pointerList[1]);
     }
   }
@@ -59,17 +59,17 @@
     e.scaleFired = true;
     var pointerList = e.getPointerList();
     // If there are two pointers down, compare to the initial pointer pair.
-    if (pointerList.length == 2 && e.target.scaleReferencePair) {
+    if (pointerList.length == 2 && this.scaleReferencePair) {
       var pair = new PointerPair(pointerList[0], pointerList[1]);
       // Compute the scaling value according to the difference.
-      var scale = pair.scaleSince(e.target.scaleReferencePair);
+      var scale = pair.scaleSince(this.scaleReferencePair);
       // If the movement is drastic enough:
       if (Math.abs(1 - scale) > SCALE_THRESHOLD) {
         // Create the scale event as a result.
         var payload = {
           scale: scale,
-          centerX: (e.target.scaleReferencePair.p1.clientX + e.target.scaleReferencePair.p2.clientX) / 2,
-          centerY: (e.target.scaleReferencePair.p1.clientY + e.target.scaleReferencePair.p2.clientY) / 2
+          centerX: (this.scaleReferencePair.p1.clientX + this.scaleReferencePair.p2.clientX) / 2,
+          centerY: (this.scaleReferencePair.p1.clientY + this.scaleReferencePair.p2.clientY) / 2
         };
         POINTER.create('gesturescale', e.target, payload);
       }
@@ -79,7 +79,7 @@
   function pointerUp(e) {
     if (e.scaleFired) return;
     e.scaleFired = true;
-    e.target.scaleReferencePair = null;
+    this.scaleReferencePair = null;
   }
 
   /**

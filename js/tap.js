@@ -13,30 +13,54 @@
     e.tapFired = true;
     var pointers = e.getPointerList();
     if (pointers.length != 1) return;
-    e.target.tapInitPosition = new POINTER.PointerPosition(pointers[0]);
-    e.target.addEventListener('pointerup', pointerUp);
-    setTimeout(function () {
-      e.target.removeEventListener('pointerup', pointerUp);
-    }, TAP_TIME);
+    this.tapInitPosition = new POINTER.PointerPosition(pointers[0]);
+    this.addEventListener('pointerup', pointerUp);
+    this.addEventListener('pointermove', pointerMove);
+    this.tapCancelTimer = setTimeout(cancelTap.bind(this), TAP_TIME);
   }
 
-  function pointerUp(e) {
+  function pointerMove(e) {
     if (e.tapFired) return;
     e.tapFired = true;
     var pointers = e.getPointerList();
-    if (pointers.length) return;
-    e.target.removeEventListener('pointerup', pointerUp);
-
-    if (this.lastDownTime === 0) return; // doubletap just triggered
-
-    var pos = e.target.tapInitPosition;
-    if(pos && pos.calculateSquaredDistance(pointers[0]) > WIGGLE_THRESHOLD * WIGGLE_THRESHOLD) {
-      var payload = {
-        clientX: pos.x,
-        clientY: pos.y
-      };
-      POINTER.create('gesturetap', e.target, payload);
+    if(e.pointerType === POINTER.Types.MOUSE) {
+      cancelTap.call(this);
     }
+    else if(pointers.length === 1) {
+      // but if the pointer is something else we allow a 
+      // for a bit of smudge space
+      var pos = this.tapInitPosition;
+      if(pos && pos.calculateSquaredDistance(pointers[0]) > WIGGLE_THRESHOLD * WIGGLE_THRESHOLD) {
+        cancelTap.call(this);
+      }
+    }
+  }
+
+  function pointerUp(e) {
+
+    if (e.tapFired) return;
+    e.tapFired = true;
+
+    var pointers = e.getPointerList();
+    if (pointers.length) return;
+
+    cancelTap.call(this);
+
+    // double / triple tap just triggered
+    if (this.lastDoubleTapDownTime === 0 || this.lastTripleTapDownTime === 0) return;
+
+    var pos = this.tapInitPosition;
+    var payload = {
+      clientX: pos.x,
+      clientY: pos.y
+    };
+    POINTER.create('gesturetap', e.target, payload);
+  }
+
+  function cancelTap () {
+    clearTimeout(this.tapCancelTimer);
+    this.removeEventListener('pointerup', pointerUp);
+    this.removeEventListener('pointermove', pointerMove);
   }
 
   /**
