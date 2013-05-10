@@ -23,15 +23,15 @@
   };
 
   function setMouse(mouseEvent) {
-    mouseEvent.currentTarget.mouseEvent = mouseEvent;
+    mouseEvent.target.mouseEvent = mouseEvent;
   }
 
   function unsetMouse(mouseEvent) {
-    mouseEvent.currentTarget.mouseEvent = null;
+    mouseEvent.target.mouseEvent = null;
   }
 
   function setTouch(touchEvent) {
-    touchEvent.currentTarget.touchList = touchEvent.targetTouches;
+    touchEvent.target.touchList = touchEvent.targetTouches;
   }
 
   /**
@@ -76,11 +76,12 @@
   function mouseDownHandler(event) {
     if (event.pointerFired) return;
     event.pointerFired = true;
+    this.addEventListener('mousemove', mouseMoveHandler);
     event.preventDefault();
     setMouse(event);
     var payload = {
       pointerType: 'mouse',
-      getPointerList: getPointerList.bind(this),
+      getPointerList: getPointerList.bind(event.target),
       originalEvent: event
     };
     createCustomEvent('pointerdown', event.target, payload);
@@ -90,12 +91,10 @@
     if (event.pointerFired) return;
     event.pointerFired = true;
     event.preventDefault();
-    if (this.mouseEvent) {
-      setMouse(event);
-    }
+    setMouse(event);
     var payload = {
       pointerType: 'mouse',
-      getPointerList: getPointerList.bind(this),
+      getPointerList: getPointerList.bind(event.target),
       originalEvent: event
     };
     createCustomEvent('pointermove', event.target, payload);
@@ -104,11 +103,12 @@
   function mouseUpHandler(event) {
     if (event.pointerFired) return;
     event.pointerFired = true;
+    this.removeEventListener('mousemove', mouseMoveHandler);
     event.preventDefault();
     unsetMouse(event);
     var payload = {
       pointerType: 'mouse',
-      getPointerList: getPointerList.bind(this),
+      getPointerList: getPointerList.bind(event.target),
       originalEvent: event
     };
     createCustomEvent('pointerup', event.target, payload);
@@ -123,7 +123,7 @@
     setTouch(event);
     var payload = {
       pointerType: 'touch',
-      getPointerList: getPointerList.bind(this),
+      getPointerList: getPointerList.bind(event.target),
       originalEvent: event
     };
     createCustomEvent('pointerdown', event.target, payload);
@@ -136,7 +136,7 @@
     setTouch(event);
     var payload = {
       pointerType: 'touch',
-      getPointerList: getPointerList.bind(this),
+      getPointerList: getPointerList.bind(event.target),
       originalEvent: event
     };
     createCustomEvent('pointermove', event.target, payload);
@@ -149,7 +149,7 @@
     setTouch(event);
     var payload = {
       pointerType: 'touch',
-      getPointerList: getPointerList.bind(this),
+      getPointerList: getPointerList.bind(event.target),
       originalEvent: event
     };
     createCustomEvent('pointerup', event.target, payload);
@@ -158,15 +158,16 @@
   function mouseOutHandler(event) {
     if (event.pointerFired) return;
     event.pointerFired = true;
-    if (this.mouseEvent &&
+    if (event.target.mouseEvent &&
         !this.contains(event.toElement) &&
         !this.contains(event.fromElement)
       ) {
+      this.removeEventListener('mousemove', mouseMoveHandler);
       event.preventDefault();
       unsetMouse(event);
       var payload = {
         pointerType: 'mouse',
-        getPointerList: getPointerList.bind(this),
+        getPointerList: getPointerList.bind(event.target),
         originalEvent: event
       };
       createCustomEvent('pointerup', event.target, payload);
@@ -184,13 +185,13 @@
       event.textPointerType = PointerTypes.MOUSE;
     }
     if (event.textPointerType == PointerTypes.MOUSE) {
-        this.msMouseDown = true;
+        event.target.msMouseDown = true;
     }
-    if (!this.msPointerList) this.msPointerList = {};
-    this.msPointerList[event.pointerId] = event;
+    if (!event.target.msPointerList) event.target.msPointerList = {};
+    event.target.msPointerList[event.pointerId] = event;
     var payload = {
       pointerType: event.textPointerType,
-      getPointerList: getPointerList.bind(this),
+      getPointerList: getPointerList.bind(event.target),
       originalEvent: event
     };
 
@@ -205,22 +206,22 @@
     } else if (event.pointerType == 4) {
       event.textPointerType = PointerTypes.MOUSE;
     }
-    if (event.textPointerType == PointerTypes.MOUSE && !this.msMouseDown) {
+    if (event.textPointerType == PointerTypes.MOUSE && !event.target.msMouseDown) {
       return;
     }
-    if (!this.msPointerList) this.msPointerList = {};
-    this.msPointerList[event.pointerId] = event;
+    if (!event.target.msPointerList) event.target.msPointerList = {};
+    event.target.msPointerList[event.pointerId] = event;
     var payload = {
       pointerType: event.textPointerType,
-      getPointerList: getPointerList.bind(this),
+      getPointerList: getPointerList.bind(event.target),
       originalEvent: event
     };
     createCustomEvent('pointermove', event.target, payload);
   }
 
   function pointerUpHandler(event) {
-    if (this.msPointerList) {
-      delete this.msPointerList[event.pointerId];
+    if (event.target.msPointerList) {
+      delete event.target.msPointerList[event.pointerId];
     }
     if (event.pointerType == 2) {
       event.textPointerType = PointerTypes.TOUCH;
@@ -230,11 +231,11 @@
       event.textPointerType = PointerTypes.MOUSE;
     }
     if (event.textPointerType == PointerTypes.MOUSE) {
-        this.msMouseDown = false;
+        event.target.msMouseDown = false;
     }
     var payload = {
       pointerType: event.textPointerType,
-      getPointerList: getPointerList.bind(this),
+      getPointerList: getPointerList.bind(event.target),
       originalEvent: event
     };
     createCustomEvent('pointerup', event.target, payload);
@@ -262,7 +263,7 @@
           el.addEventListener('touchend', touchEndHandler);
         }
         el.addEventListener('mousedown', mouseDownHandler);
-        el.addEventListener('mousemove', mouseMoveHandler);
+        // el.addEventListener('mousemove', mouseMoveHandler);
         el.addEventListener('mouseup', mouseUpHandler);
         // Necessary for the edge case that the mouse is down and you drag out of
         // the area.
