@@ -73,12 +73,14 @@
 
   /*************** Mouse event handlers *****************/
 
+  var globalMouseDown = false;
+
   function mouseDownHandler(event) {
     if (event.pointerFired) return;
     event.pointerFired = true;
-    this.addEventListener('mousemove', mouseMoveHandler);
     event.preventDefault();
     setMouse(event);
+    globalMouseDown = true;
     var payload = {
       pointerType: 'mouse',
       getPointerList: getPointerList.bind(event.target),
@@ -91,7 +93,9 @@
     if (event.pointerFired) return;
     event.pointerFired = true;
     event.preventDefault();
-    setMouse(event);
+    if (globalMouseDown) {
+      setMouse(event);
+    }
     var payload = {
       pointerType: 'mouse',
       getPointerList: getPointerList.bind(event.target),
@@ -103,9 +107,9 @@
   function mouseUpHandler(event) {
     if (event.pointerFired) return;
     event.pointerFired = true;
-    this.removeEventListener('mousemove', mouseMoveHandler);
     event.preventDefault();
     unsetMouse(event);
+    globalMouseDown = false;
     var payload = {
       pointerType: 'mouse',
       getPointerList: getPointerList.bind(event.target),
@@ -162,7 +166,6 @@
         !this.contains(event.toElement) &&
         !this.contains(event.fromElement)
       ) {
-      this.removeEventListener('mousemove', mouseMoveHandler);
       event.preventDefault();
       unsetMouse(event);
       var payload = {
@@ -263,7 +266,7 @@
           el.addEventListener('touchend', touchEndHandler);
         }
         el.addEventListener('mousedown', mouseDownHandler);
-        // el.addEventListener('mousemove', mouseMoveHandler);
+        el.addEventListener('mousemove', mouseMoveHandler);
         el.addEventListener('mouseup', mouseUpHandler);
         // Necessary for the edge case that the mouse is down and you drag out of
         // the area.
