@@ -575,6 +575,8 @@ window.Modernizr = (function( window, document, undefined ) {
   function PointerPosition(pointer) {
     this.x = pointer.clientX;
     this.y = pointer.clientY;
+    this.px = pointer.pageX;
+    this.py = pointer.pageY;
   }
 
   /**
@@ -641,7 +643,9 @@ window.Modernizr = (function( window, document, undefined ) {
       this.lastPosition = null;
       var payload = {
         clientX: pointers[0].clientX,
-        clientY: pointers[0].clientY
+        clientY: pointers[0].clientY,
+        pageX: pointers[0].pageX,
+        pageY: pointers[0].pageY
       };
       POINTER.create('gesturedoubletap', e.target, payload);
     } else {
@@ -692,7 +696,9 @@ window.Modernizr = (function( window, document, undefined ) {
       this.longPressTimer = setTimeout(function() {
         var payload = {
           clientX: pointers[0].clientX,
-          clientY: pointers[0].clientY
+          clientY: pointers[0].clientY,
+          pageX: pointers[0].pageX,
+          pageY: pointers[0].pageY
         };
         POINTER.create('gesturelongpress', e.target, payload);
       }, LONGPRESS_TIME);
@@ -895,7 +901,9 @@ window.Modernizr = (function( window, document, undefined ) {
     var pos = this.tapInitPosition;
     var payload = {
       clientX: pos.x,
-      clientY: pos.y
+      clientY: pos.y,
+      pageX: pos.px,
+      pageY: pos.py
     };
     POINTER.create('gesturetap', e.target, payload);
   }
@@ -947,7 +955,9 @@ window.Modernizr = (function( window, document, undefined ) {
       this.tapCount = 0;
       var payload = {
         clientX: pointers[0].clientX,
-        clientY: pointers[0].clientY
+        clientY: pointers[0].clientY,
+        pageX: pointers[0].pageX,
+        pageY: pointers[0].pageY
       };
       POINTER.create('gesturetripletap', e.target, payload);
     } else {

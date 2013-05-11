@@ -25,7 +25,9 @@
       this.lastPosition = null;
       var payload = {
         clientX: pointers[0].clientX,
-        clientY: pointers[0].clientY
+        clientY: pointers[0].clientY,
+        pageX: pointers[0].pageX,
+        pageY: pointers[0].pageY
       };
       POINTER.create('gesturedoubletap', e.target, payload);
     } else {

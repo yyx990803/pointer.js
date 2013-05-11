@@ -28,7 +28,9 @@
       this.tapCount = 0;
       var payload = {
         clientX: pointers[0].clientX,
-        clientY: pointers[0].clientY
+        clientY: pointers[0].clientY,
+        pageX: pointers[0].pageX,
+        pageY: pointers[0].pageY
       };
       POINTER.create('gesturetripletap', e.target, payload);
     } else {

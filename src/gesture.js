@@ -6,6 +6,8 @@
   function PointerPosition(pointer) {
     this.x = pointer.clientX;
     this.y = pointer.clientY;
+    this.px = pointer.pageX;
+    this.py = pointer.pageY;
   }
 
   /**

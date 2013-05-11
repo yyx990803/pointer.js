@@ -52,7 +52,9 @@
     var pos = this.tapInitPosition;
     var payload = {
       clientX: pos.x,
-      clientY: pos.y
+      clientY: pos.y,
+      pageX: pos.px,
+      pageY: pos.py
     };
     POINTER.create('gesturetap', e.target, payload);
   }

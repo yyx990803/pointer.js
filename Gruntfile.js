@@ -9,21 +9,21 @@ module.exports = function( grunt ) {
           'Modernizr': true
         }
       },
-      all: ['js/*.js']
+      all: ['src/*.js']
     },
     concat: {
       build: {
         dest: 'build/pointer.js',
         src: [
           //'js/bind-polyfill.js',
-          'js/libs/modernizr-touch.js',
-          'js/pointer.js',
-          'js/gesture.js',
-          'js/doubletap.js',
-          'js/longpress.js',
-          'js/scale.js',
-          'js/tap.js',
-          'js/tripletap.js'
+          'src/libs/modernizr-touch.js',
+          'src/pointer.js',
+          'src/gesture.js',
+          'src/doubletap.js',
+          'src/longpress.js',
+          'src/scale.js',
+          'src/tap.js',
+          'src/tripletap.js'
         ]
       }
     },
@@ -36,7 +36,7 @@ module.exports = function( grunt ) {
     },
     watch: {
       concat: {
-        files: ['js/**/*.js'],
+        files: ['src/**/*.js'],
         tasks: 'concat'
       }
     }
