@@ -274,9 +274,10 @@ window.Modernizr = (function( window, document, undefined ) {
     return pointers;
   }
 
-  function createCustomEvent(eventName, target, payload) {
+  function createCustomEvent(eventName, target, payload, bubbles) {
     var event = document.createEvent('Event');
-    event.initEvent(eventName, true, true);
+    if (bubbles !== false) bubbles = true;
+    event.initEvent(eventName, bubbles, true);
     for (var k in payload) {
       event[k] = payload[k];
     }
@@ -356,7 +357,9 @@ window.Modernizr = (function( window, document, undefined ) {
           getPointerList: getPointerList.bind(event.target),
           originalEvent: event
         };
-        createCustomEvent('pointerup', event.target, payload);
+        // pointerleave is for mouse only and should NOT bubble
+        // similar to mouseleave
+        createCustomEvent('pointerleave', this, payload, false);
       }
     }
   }
