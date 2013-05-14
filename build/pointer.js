@@ -476,7 +476,7 @@ window.Modernizr = (function( window, document, undefined ) {
    * Causes the passed in element to broadcast pointer events instead
    * of mouse/touch/etc events.
    */
-  function emitPointers(el) {
+  function emitPointers(el, pointerleave) {
     if (!el.isPointerEmitter) {
       // Latch on to all relevant events for this element.
       if (isPointer()) {
@@ -498,10 +498,12 @@ window.Modernizr = (function( window, document, undefined ) {
         el.addEventListener('mouseup', mouseUpHandler);
         // Necessary for the edge case that the mouse is down and you drag out of
         // the area.
-        el.addEventListener('mouseout', mouseOutHandler);
       }
-
       el.isPointerEmitter = true;
+    }
+    if (pointerleave && !el.isPointerLeaveEmitter) {
+      el.addEventListener('mouseout', mouseOutHandler);
+      el.isPointerLeaveEmitter = true;
     }
   }
 
@@ -548,7 +550,7 @@ window.Modernizr = (function( window, document, undefined ) {
 
   function synthesizePointerEvents(type, listener, useCapture) {
     if (type.indexOf('pointer') === 0) {
-      emitPointers(this);
+      emitPointers(this, type === 'pointerleave');
     }
   }
 
