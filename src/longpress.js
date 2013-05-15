@@ -5,7 +5,7 @@
  * for a while (without movement).
  */
 (function(POINTER) {
-  var LONGPRESS_TIME = 600;
+  var DEFAULT_LONGPRESS_TIME = 600;
   var WIGGLE_THRESHOLD = 5;
 
   function pointerDown(e) {
@@ -34,7 +34,7 @@
           pageY: pointers[0].pageY
         };
         POINTER.create('gesturelongpress', e.target, payload);
-      }, LONGPRESS_TIME);
+      }, this.longPressTime || DEFAULT_LONGPRESS_TIME);
 
     }
     
