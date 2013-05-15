@@ -34,7 +34,7 @@
           pageY: pointers[0].pageY
         };
         POINTER.create('gesturelongpress', e.target, payload);
-      }, this.longpressTime || DEFAULT_LONGPRESS_TIME);
+      }, this.longPressTime || DEFAULT_LONGPRESS_TIME);
 
     }
     
